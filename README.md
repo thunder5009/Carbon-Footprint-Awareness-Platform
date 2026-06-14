@@ -1,36 +1,64 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# CarbonTrack
 
-## Getting Started
+A science-backed, premium carbon footprint calculator and tracker. Understand your transport, energy, food, and waste emissions to discover the changes that matter most.
 
-First, run the development server:
+![CarbonTrack Architecture](https://via.placeholder.com/1200x630?text=CarbonTrack+Architecture)
 
+## Features
+- **Frictionless Calculator:** Estimate emissions in under 2 minutes.
+- **Anonymous-First UX:** See full results before committing to sign up.
+- **Dynamic Dashboards:** Monitor historical trends and compare against benchmarks.
+- **Science-Backed Engine:** Real-world emission factors tailored to global averages.
+- **Enterprise Edge:** Server Components, Edge rendering, and NextAuth security.
+
+## Quick Start
+
+Get the local development environment running in under 5 minutes.
+
+### 1. Clone & Install
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+git clone https://github.com/your-org/carbon-track.git
+cd carbon-track
+npm install
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### 2. Environment Variables
+Copy the template and fill in your credentials.
+```bash
+cp .env.example .env.local
+```
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### 3. Database Migration
+Spin up a local PostgreSQL instance or connect to a cloud database (Supabase), then push the schema.
+```bash
+npx prisma db push
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### 4. Run Development Server
+```bash
+npm run dev
+```
+Open [http://localhost:3000](http://localhost:3000) to view the application.
 
-## Learn More
+## Testing Architecture
 
-To learn more about Next.js, take a look at the following resources:
+This repository strictly adheres to the 70/20/10 Testing Pyramid:
+- **70% Unit Tests:** Calculation engine and Zod schemas (Vitest).
+- **20% Integration Tests:** API routes and UI components (Vitest + RTL).
+- **10% E2E Tests:** Critical paths, visual regression, and accessibility (Playwright).
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+**Run the Full Suite:**
+```bash
+npm run test           # Run Vitest unit & integration tests
+npm run test:e2e       # Run Playwright E2E suite
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Deployment
 
-## Deploy on Vercel
+CarbonTrack is optimized for **Vercel**.
+1. Push to the `main` branch.
+2. Vercel automatically builds the project (`npm run build`).
+3. Migrations run automatically during the build step.
+4. Edge middleware and ISR routes are automatically provisioned.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+For detailed operational procedures, refer to [OPERATIONS.md](./OPERATIONS.md).

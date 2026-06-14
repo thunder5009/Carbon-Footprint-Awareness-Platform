@@ -1,0 +1,8 @@
+{
+  "scripts": {
+    "lg:check": "node scripts/check-liquid-glass.js",
+    "lg:demo": "npm run dev -- --open /liquid-glass-demo",
+    "lg:comparison": "npm run dev -- --open /liquid-glass-comparison",
+    "lg:test": "vitest run liquid-glass"
+  }
+}
