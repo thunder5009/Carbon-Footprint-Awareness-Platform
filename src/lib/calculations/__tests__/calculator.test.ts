@@ -40,6 +40,7 @@ describe("calculateTransport", () => {
   it("returns 0 for zero inputs", () => {
     const result = calculateTransport({
       hasCar: false,
+      fuelType: "gasoline",
       busMiles: 0,
       trainMiles: 0,
       subwayMiles: 0,
@@ -88,6 +89,7 @@ describe("calculateTransport", () => {
     it("ignores car when fuelType is missing", () => {
       const result = calculateTransport({
         hasCar: true,
+        fuelType: "gasoline",
         milesPerYear: 10000,
         busMiles: 0,
         trainMiles: 0,
@@ -101,6 +103,7 @@ describe("calculateTransport", () => {
     it("ignores car when milesPerYear is 0", () => {
       const result = calculateTransport({
         hasCar: true,
+        fuelType: "gasoline",
         fuelType: "gasoline",
         milesPerYear: 0,
         busMiles: 0,
@@ -117,6 +120,7 @@ describe("calculateTransport", () => {
     it("calculates bus emissions", () => {
       const result = calculateTransport({
         hasCar: false,
+      fuelType: "gasoline",
         busMiles: 1000,
         trainMiles: 0,
         subwayMiles: 0,
@@ -129,6 +133,7 @@ describe("calculateTransport", () => {
     it("calculates train emissions", () => {
       const result = calculateTransport({
         hasCar: false,
+      fuelType: "gasoline",
         busMiles: 0,
         trainMiles: 2000,
         subwayMiles: 0,
@@ -141,6 +146,7 @@ describe("calculateTransport", () => {
     it("calculates subway emissions", () => {
       const result = calculateTransport({
         hasCar: false,
+      fuelType: "gasoline",
         busMiles: 0,
         trainMiles: 0,
         subwayMiles: 5000,
@@ -153,6 +159,7 @@ describe("calculateTransport", () => {
     it("sums all transit modes", () => {
       const result = calculateTransport({
         hasCar: false,
+      fuelType: "gasoline",
         busMiles: 1000,
         trainMiles: 2000,
         subwayMiles: 3000,
@@ -171,6 +178,7 @@ describe("calculateTransport", () => {
     it("calculates short-haul flights", () => {
       const result = calculateTransport({
         hasCar: false,
+      fuelType: "gasoline",
         busMiles: 0,
         trainMiles: 0,
         subwayMiles: 0,
@@ -185,6 +193,7 @@ describe("calculateTransport", () => {
     it("calculates long-haul flights", () => {
       const result = calculateTransport({
         hasCar: false,
+      fuelType: "gasoline",
         busMiles: 0,
         trainMiles: 0,
         subwayMiles: 0,

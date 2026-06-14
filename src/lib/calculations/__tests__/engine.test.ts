@@ -13,6 +13,7 @@ describe("Calculation Engine", () => {
     it("returns 0 when no transport is used", () => {
       const result = calculateTransport({
         hasCar: false,
+      fuelType: "gasoline",
         busMiles: 0,
         trainMiles: 0,
         subwayMiles: 0,
@@ -41,6 +42,7 @@ describe("Calculation Engine", () => {
     it("calculates public transit emissions", () => {
       const result = calculateTransport({
         hasCar: false,
+      fuelType: "gasoline",
         busMiles: 1000,
         trainMiles: 500,
         subwayMiles: 200,
@@ -58,6 +60,7 @@ describe("Calculation Engine", () => {
     it("calculates aviation emissions", () => {
       const result = calculateTransport({
         hasCar: false,
+      fuelType: "gasoline",
         busMiles: 0,
         trainMiles: 0,
         subwayMiles: 0,
@@ -77,7 +80,8 @@ describe("Calculation Engine", () => {
     
     it("handles missing fuelType safely (returns 0 for car)", () => {
       const result = calculateTransport({
-        hasCar: true, // true but no fuelType
+        hasCar: true,
+        fuelType: "gasoline", // true but no fuelType
         milesPerYear: 10000,
         busMiles: 0,
         trainMiles: 0,
@@ -234,6 +238,7 @@ describe("Calculation Engine", () => {
       const result = calculateFootprint({
         transport: {
           hasCar: false,
+      fuelType: "gasoline",
           busMiles: 0,
           trainMiles: 0,
           subwayMiles: 0,

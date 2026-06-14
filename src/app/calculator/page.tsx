@@ -114,9 +114,16 @@ export default function CalculatorPage() {
     if (saved) {
       try {
         const parsed = JSON.parse(saved);
-        reset(parsed);
+        const validation = CalculatorInputSchema.safeParse(parsed);
+        if (validation.success) {
+          reset(parsed);
+        } else {
+          console.warn("Invalid session data found, clearing to prevent errors.", validation.error);
+          sessionStorage.removeItem("carbonInputs");
+        }
       } catch (e) {
         console.error("Failed to restore session data", e);
+        sessionStorage.removeItem("carbonInputs");
       }
     }
   }, [reset]);
@@ -150,7 +157,7 @@ export default function CalculatorPage() {
       console.log("Sending to worker for calculation:", parsed.data);
       workerRef.current.postMessage(parsed.data);
     } else if (!parsed.success) {
-      console.log("Form validation errors:", parsed.error.errors);
+      console.log("Form validation errors:", parsed.error.issues);
     }
 
     return () => clearTimeout(autoSaveTimer);
