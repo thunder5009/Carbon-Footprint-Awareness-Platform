@@ -1,64 +1,108 @@
-# CarbonTrack
+# CarbonTrack 🌍
 
-A science-backed, premium carbon footprint calculator and tracker. Understand your transport, energy, food, and waste emissions to discover the changes that matter most.
+A beautiful, science-backed carbon footprint calculator with real-time calculations and a premium glassmorphic UI.
 
-![CarbonTrack Architecture](https://via.placeholder.com/1200x630?text=CarbonTrack+Architecture)
+![Next.js](https://img.shields.io/badge/Next.js-16-black)
+![TypeScript](https://img.shields.io/badge/TypeScript-5-blue)
+![Prisma](https://img.shields.io/badge/Prisma-7-brightgreen)
+![License](https://img.shields.io/badge/license-MIT-green)
 
-## Features
-- **Frictionless Calculator:** Estimate emissions in under 2 minutes.
-- **Anonymous-First UX:** See full results before committing to sign up.
-- **Dynamic Dashboards:** Monitor historical trends and compare against benchmarks.
-- **Science-Backed Engine:** Real-world emission factors tailored to global averages.
-- **Enterprise Edge:** Server Components, Edge rendering, and NextAuth security.
+## ✨ Features
 
-## Quick Start
+- 🎯 **2-Minute Calculator** - Quick and easy carbon footprint estimation
+- 📊 **Real-Time Updates** - See your impact as you type
+- 🎨 **Premium UI** - Glassmorphic design with smooth animations
+- 📱 **Mobile First** - Fully responsive on all devices
+- 🔒 **Privacy Focused** - Optional authentication, anonymous usage supported
+- 📈 **Historical Tracking** - Monitor your progress over time
+- 🌐 **Production Ready** - Built with enterprise-grade patterns
 
-Get the local development environment running in under 5 minutes.
+## 🚀 Live Demo
 
-### 1. Clone & Install
+[Visit Live Site](https://your-deployment-url.vercel.app) _(coming soon after deployment)_
+
+## 🛠️ Tech Stack
+
+- **Framework:** Next.js 16 (App Router)
+- **Language:** TypeScript
+- **Database:** PostgreSQL with Prisma ORM
+- **Auth:** NextAuth.js v5
+- **Styling:** Tailwind CSS
+- **Animation:** Framer Motion
+- **Forms:** React Hook Form + Zod
+- **Charts:** Recharts
+- **Testing:** Vitest + Playwright
+
+## 📦 Quick Start
+
+### Prerequisites
+- Node.js 20+
+- PostgreSQL database (or use Supabase)
+
+### Installation
+
 ```bash
-git clone https://github.com/your-org/carbon-track.git
+# Clone the repository
+git clone https://github.com/YOUR_USERNAME/carbon-track.git
 cd carbon-track
+
+# Install dependencies
 npm install
-```
 
-### 2. Environment Variables
-Copy the template and fill in your credentials.
-```bash
+# Set up environment variables
 cp .env.example .env.local
-```
+# Edit .env.local with your database credentials
 
-### 3. Database Migration
-Spin up a local PostgreSQL instance or connect to a cloud database (Supabase), then push the schema.
-```bash
+# Push database schema
 npx prisma db push
-```
 
-### 4. Run Development Server
-```bash
+# Start development server
 npm run dev
 ```
-Open [http://localhost:3000](http://localhost:3000) to view the application.
 
-## Testing Architecture
+Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-This repository strictly adheres to the 70/20/10 Testing Pyramid:
-- **70% Unit Tests:** Calculation engine and Zod schemas (Vitest).
-- **20% Integration Tests:** API routes and UI components (Vitest + RTL).
-- **10% E2E Tests:** Critical paths, visual regression, and accessibility (Playwright).
+## 🌐 Deployment
 
-**Run the Full Suite:**
+This project is optimized for **Vercel**. See the [deployment guide](./deploy.md) for step-by-step instructions.
+
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/YOUR_USERNAME/carbon-track)
+
+## 📖 Documentation
+
+- [Deployment Guide](./deploy.md) - Quick deployment steps
+- [Full Deployment Documentation](./DEPLOYMENT_STEPS.md) - Comprehensive guide
+- [Architecture](./ARCHITECTURE.md) - System design and patterns
+- [API Documentation](./API.md) - API endpoints reference
+- [Operations](./OPERATIONS.md) - Production operations guide
+
+## 🧪 Testing
+
 ```bash
-npm run test           # Run Vitest unit & integration tests
-npm run test:e2e       # Run Playwright E2E suite
+# Run unit tests
+npm run test
+
+# Run E2E tests
+npm run test:e2e
+
+# Run linting
+npm run lint
 ```
 
-## Deployment
+## 🤝 Contributing
 
-CarbonTrack is optimized for **Vercel**.
-1. Push to the `main` branch.
-2. Vercel automatically builds the project (`npm run build`).
-3. Migrations run automatically during the build step.
-4. Edge middleware and ISR routes are automatically provisioned.
+Contributions are welcome! See [CONTRIBUTING.md](./CONTRIBUTING.md) for guidelines.
 
-For detailed operational procedures, refer to [OPERATIONS.md](./OPERATIONS.md).
+## 📄 License
+
+This project is licensed under the MIT License.
+
+## 🙏 Acknowledgments
+
+- Emission factors based on EPA and IPCC guidelines
+- UI inspired by Apple's iOS design system
+- Built with modern web standards and best practices
+
+---
+
+**Built with ❤️ for a sustainable future**
