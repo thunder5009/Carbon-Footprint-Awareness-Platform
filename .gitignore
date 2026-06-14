@@ -45,3 +45,20 @@ next-env.d.ts
 # playwright
 /playwright-report/
 /test-results/
+
+# Exclude demo and documentation files for cleaner GitHub
+LIQUID_GLASS_*.md
+README_LIQUID_GLASS.md
+package.json.liquid-glass-scripts
+src/app/liquid-glass-demo/
+src/app/liquid-glass-comparison/
+src/app/calculator-v2/
+src/app/globals-liquid-glass.css
+src/components/ui/liquid-glass-v2.tsx
+src/components/ui/liquid-glass-svg-filter.tsx
+src/components/ui/__tests__/liquid-glass-v2.test.tsx
+src/lib/utils/liquid-glass-manager.ts
+src/lib/utils/__tests__/liquid-glass-manager.test.ts
+src/types/liquid-glass.d.ts
+src/components/examples/
+scripts/check-liquid-glass.js
