@@ -62,3 +62,5 @@ src/lib/utils/__tests__/liquid-glass-manager.test.ts
 src/types/liquid-glass.d.ts
 src/components/examples/
 scripts/check-liquid-glass.js
+
+.vercel

@@ -104,7 +104,6 @@ describe("calculateTransport", () => {
       const result = calculateTransport({
         hasCar: true,
         fuelType: "gasoline",
-        fuelType: "gasoline",
         milesPerYear: 0,
         busMiles: 0,
         trainMiles: 0,

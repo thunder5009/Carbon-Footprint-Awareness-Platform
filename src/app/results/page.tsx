@@ -2,176 +2,250 @@
 
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import dynamic from "next/dynamic";
-import { LiquidGlass } from "@/components/ui/liquid-glass";
-
-// Code-split Recharts to prevent blocking the main thread
-const LiquidChart = dynamic(() => import("@/components/ui/liquid-chart").then(mod => mod.LiquidChart), { ssr: false });
-import { LiquidButton } from "@/components/ui/liquid-button";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { Navbar } from "@/components/layout/navbar";
 import type { CalculationResult } from "@/lib/calculations/calculator";
 
+const CATEGORY_META: Record<string, { label: string; icon: string; color: string }> = {
+  transport: { label: "Transport", icon: "🚗", color: "#3b82f6" },
+  energy: { label: "Energy", icon: "⚡", color: "#f59e0b" },
+  food: { label: "Food", icon: "🥗", color: "#22c55e" },
+  waste: { label: "Waste", icon: "♻️", color: "#a855f7" },
+};
+
 export default function ResultsPage() {
+  const router = useRouter();
   const [result, setResult] = useState<CalculationResult | null>(null);
 
   useEffect(() => {
     const stored = sessionStorage.getItem("carbonResult");
-    if (stored) setResult(JSON.parse(stored));
-  }, []);
+    if (!stored) {
+      router.push("/calculator");
+      return;
+    }
+    try {
+      setResult(JSON.parse(stored));
+    } catch {
+      router.push("/calculator");
+    }
+  }, [router]);
 
   if (!result) {
     return (
-      <div className="max-w-4xl mx-auto px-4 py-20 text-center">
-        <LiquidGlass className="p-12">
-          <h2 className="text-2xl font-bold mb-4">No calculation found</h2>
-          <Link href="/calculator">
-            <LiquidButton>Go to Calculator</LiquidButton>
-          </Link>
-        </LiquidGlass>
-      </div>
+      <>
+        <Navbar />
+        <div style={{ minHeight: "80vh", display: "flex", alignItems: "center", justifyContent: "center" }}>
+          <div style={{ width: "32px", height: "32px", border: "2px solid #333", borderTopColor: "#fff", borderRadius: "50%", animation: "spin 0.8s linear infinite" }} />
+        </div>
+        <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+      </>
     );
   }
 
-  const chartData = [
-    { name: "Transport", value: result.breakdown.transport, color: "hsl(var(--chart-transport))" },
-    { name: "Energy", value: result.breakdown.energy, color: "hsl(var(--chart-energy))" },
-    { name: "Food", value: result.breakdown.food, color: "hsl(var(--chart-food))" },
-    { name: "Waste", value: result.breakdown.waste, color: "hsl(var(--chart-waste))" },
-  ];
+  const { totalCO2, breakdown } = result;
+  const categories = Object.entries(breakdown).sort(([, a], [, b]) => b - a);
+  const maxCategoryValue = Math.max(...Object.values(breakdown));
 
-  const usAverage = 16;
-  const comparison = result.totalCO2 < usAverage ? "below" : "above";
-  const percentage = Math.abs(Math.round(((result.totalCO2 - usAverage) / usAverage) * 100));
-
-  // Determine highest emission sector
-  const breakdown = result.breakdown;
-  const categories = Object.keys(breakdown) as Array<keyof typeof breakdown>;
-  const highestCategory = categories.reduce((a, b) => 
-    breakdown[a] > breakdown[b] ? a : b
-  );
-
-  const recommendations = {
-    transport: [
-      "Switch to public transit or bicycle/walk for local trips.",
-      "Consider a hybrid or electric vehicle next time you upgrade.",
-      "Minimize flight trips, or choose direct flights when traveling."
-    ],
-    energy: [
-      "Switch to a 100% renewable electricity grid plan if available.",
-      "Upgrade to smart thermostats and insulate drafty windows/doors.",
-      "Ensure all light fixtures use low-power LED bulbs."
-    ],
-    food: [
-      "Introduce vegetarian or vegan meals several days a week.",
-      "Source local and organic produce to lower supply chain emissions.",
-      "Commit to composting and plan meals to limit food disposal."
-    ],
-    waste: [
-      "Establish strict sorting of paper, plastics, and metals.",
-      "Reduce buying single-use bottled beverages entirely.",
-      "Compost food scraps to keep organic material out of landfills."
-    ]
-  };
-
-  const activeRecs = recommendations[highestCategory as keyof typeof recommendations] || recommendations.transport;
+  // Rating
+  let rating = "High";
+  let ratingColor = "#ff4444";
+  if (totalCO2 < 4) {
+    rating = "Excellent";
+    ratingColor = "#22c55e";
+  } else if (totalCO2 < 8) {
+    rating = "Good";
+    ratingColor = "#c8ff00";
+  } else if (totalCO2 < 14) {
+    rating = "Average";
+    ratingColor = "#f59e0b";
+  }
 
   return (
-    <div className="max-w-4xl mx-auto px-4 py-8 space-y-8">
-      <motion.div
-        initial={{ opacity: 0, y: 30, filter: "blur(10px)" }}
-        animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-        transition={{ type: "spring", stiffness: 200, damping: 25 }}
-        className="text-center space-y-4"
-      >
-        <h1 id="results-heading" className="text-4xl md:text-5xl font-bold glass-text">Your Results</h1>
-        <p className="text-muted-foreground text-lg">
-          Your footprint is{" "}
-          <span className="font-semibold text-primary">
-            {result.totalCO2.toFixed(1)} tons CO₂/year
+    <>
+      <Navbar />
+
+      <div style={{ padding: "60px 32px 80px", maxWidth: "800px", margin: "0 auto" }}>
+        {/* Header */}
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+          style={{ textAlign: "center", marginBottom: "64px" }}
+        >
+          <span className="text-caption" style={{ marginBottom: "24px", display: "block" }}>
+            Your Results
           </span>
-          .
-        </p>
-        <p className="text-sm max-w-md mx-auto text-muted-foreground bg-white/5 py-2 px-4 rounded-full border border-white/5">
-          This is{" "}
-          <span className="font-semibold text-foreground">{percentage}% {comparison}</span>{" "}
-          the US national average of 16 tons.
-        </p>
-      </motion.div>
 
-      <section aria-labelledby="breakdown-heading" className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
-        <div className="space-y-4">
-          <h2 id="breakdown-heading" className="text-2xl font-bold">Category Breakdown</h2>
-          <ul className="space-y-3" role="list" aria-label="Emissions by category">
-            {chartData.map((item) => (
-              <li key={item.name}>
-                <LiquidGlass variant="light" className="p-4 flex items-center justify-between" hoverScale>
-                  <div className="flex items-center gap-3">
-                    <div
-                      className="w-3 h-3 rounded-full"
-                      style={{ backgroundColor: item.color }}
-                      aria-hidden="true"
-                    />
-                    <span className="font-medium text-foreground">{item.name}</span>
-                  </div>
-                  <span className="font-bold tabular-nums text-foreground">
-                    {item.value.toFixed(1)}{" "}
-                    <span className="text-xs font-normal text-muted-foreground">tons</span>
-                  </span>
-                </LiquidGlass>
-              </li>
-            ))}
-          </ul>
-        </div>
-        <div className="flex justify-center">
-          <LiquidChart data={chartData} className="w-full max-w-sm" />
-        </div>
-      </section>
-
-      <section aria-labelledby="actions-heading">
-        <LiquidGlass variant="heavy" className="p-8 space-y-6">
-          <div>
-            <h2 id="actions-heading" className="text-2xl font-bold text-foreground">
-              Biggest Impact:{" "}
-              <span className="capitalize text-primary">{highestCategory}</span>
-            </h2>
-            <p className="text-muted-foreground text-sm mt-1">
-              Personalized actions to achieve the biggest reduction based on your profile:
-            </p>
+          {/* Big Number */}
+          <div
+            style={{
+              fontSize: "clamp(5rem, 15vw, 12rem)",
+              fontWeight: 900,
+              lineHeight: 0.85,
+              letterSpacing: "-0.05em",
+              marginBottom: "16px",
+            }}
+          >
+            {totalCO2.toFixed(1)}
           </div>
-          <ol className="space-y-3 text-left" aria-label="Recommended actions">
-            {activeRecs.map((rec, i) => (
-              <motion.li
-                key={i}
+          <div style={{ fontSize: "1.125rem", color: "#666", marginBottom: "24px" }}>
+            metric tons CO₂e per year
+          </div>
+
+          {/* Rating badge */}
+          <div
+            style={{
+              display: "inline-flex",
+              alignItems: "center",
+              gap: "8px",
+              padding: "8px 20px",
+              borderRadius: "100px",
+              border: `1px solid ${ratingColor}30`,
+              background: `${ratingColor}10`,
+            }}
+          >
+            <div
+              style={{
+                width: 8,
+                height: 8,
+                borderRadius: "50%",
+                background: ratingColor,
+              }}
+            />
+            <span style={{ fontSize: "0.875rem", fontWeight: 600, color: ratingColor }}>
+              {rating}
+            </span>
+          </div>
+        </motion.div>
+
+        {/* Comparison bar */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.2 }}
+          style={{
+            background: "#0a0a0a",
+            border: "1px solid #1a1a1a",
+            borderRadius: "20px",
+            padding: "32px",
+            marginBottom: "32px",
+          }}
+        >
+          <div style={{ fontSize: "0.75rem", fontWeight: 600, color: "#666", letterSpacing: "0.05em", textTransform: "uppercase", marginBottom: "24px" }}>
+            How You Compare
+          </div>
+
+          {[
+            { label: "Your Footprint", value: totalCO2, color: "#fff" },
+            { label: "US Average", value: 16, color: "#666" },
+            { label: "Paris Target", value: 2, color: "#c8ff00" },
+          ].map((item, i) => (
+            <div key={item.label} style={{ marginBottom: i < 2 ? "20px" : 0 }}>
+              <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "8px" }}>
+                <span style={{ fontSize: "0.875rem", color: item.color, fontWeight: 500 }}>{item.label}</span>
+                <span style={{ fontSize: "0.875rem", color: item.color, fontWeight: 700, fontVariantNumeric: "tabular-nums" }}>
+                  {item.value.toFixed(1)}t
+                </span>
+              </div>
+              <div style={{ height: "4px", background: "#1a1a1a", borderRadius: "2px", overflow: "hidden" }}>
+                <motion.div
+                  initial={{ width: 0 }}
+                  animate={{ width: `${Math.min((item.value / 20) * 100, 100)}%` }}
+                  transition={{ duration: 1, delay: 0.3 + i * 0.15, ease: [0.16, 1, 0.3, 1] }}
+                  style={{ height: "100%", background: item.color, borderRadius: "2px" }}
+                />
+              </div>
+            </div>
+          ))}
+        </motion.div>
+
+        {/* Category Breakdown */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.4 }}
+          style={{
+            background: "#0a0a0a",
+            border: "1px solid #1a1a1a",
+            borderRadius: "20px",
+            padding: "32px",
+            marginBottom: "32px",
+          }}
+        >
+          <div style={{ fontSize: "0.75rem", fontWeight: 600, color: "#666", letterSpacing: "0.05em", textTransform: "uppercase", marginBottom: "32px" }}>
+            Breakdown by Category
+          </div>
+
+          {categories.map(([key, value], i) => {
+            const meta = CATEGORY_META[key];
+            const percentage = totalCO2 > 0 ? ((value / totalCO2) * 100).toFixed(0) : "0";
+            return (
+              <motion.div
+                key={key}
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: i * 0.1 }}
-                className="flex items-start gap-3 text-foreground/95 bg-white/5 p-4 rounded-2xl border border-white/5"
+                transition={{ duration: 0.4, delay: 0.5 + i * 0.1 }}
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "16px",
+                  padding: "20px 0",
+                  borderTop: i > 0 ? "1px solid #1a1a1a" : "none",
+                }}
               >
-                <div
-                  className="w-6 h-6 rounded-full bg-primary/20 text-primary flex items-center justify-center font-bold text-xs shrink-0 mt-0.5"
-                  aria-hidden="true"
-                >
-                  {i + 1}
+                <span style={{ fontSize: "1.5rem", width: "36px" }}>{meta.icon}</span>
+                <div style={{ flex: 1 }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "8px" }}>
+                    <span style={{ fontSize: "0.9375rem", fontWeight: 600, color: "#fff" }}>
+                      {meta.label}
+                    </span>
+                    <span style={{ fontSize: "0.9375rem", fontWeight: 700, color: "#fff", fontVariantNumeric: "tabular-nums" }}>
+                      {value.toFixed(2)}t <span style={{ color: "#666", fontWeight: 400 }}>({percentage}%)</span>
+                    </span>
+                  </div>
+                  <div style={{ height: "3px", background: "#1a1a1a", borderRadius: "2px", overflow: "hidden" }}>
+                    <motion.div
+                      initial={{ width: 0 }}
+                      animate={{ width: maxCategoryValue > 0 ? `${(value / maxCategoryValue) * 100}%` : "0%" }}
+                      transition={{ duration: 0.8, delay: 0.6 + i * 0.1, ease: [0.16, 1, 0.3, 1] }}
+                      style={{ height: "100%", background: meta.color, borderRadius: "2px" }}
+                    />
+                  </div>
                 </div>
-                <p className="text-sm md:text-base leading-relaxed">{rec}</p>
-              </motion.li>
-            ))}
-          </ol>
-        </LiquidGlass>
-      </section>
+              </motion.div>
+            );
+          })}
+        </motion.div>
 
-      <div className="flex flex-col sm:flex-row justify-center gap-4 pt-4">
-        <Link href="/calculator">
-          <LiquidButton variant="clear" className="w-full sm:w-auto">
+        {/* Actions */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.8 }}
+          style={{
+            display: "flex",
+            gap: "12px",
+            justifyContent: "center",
+            flexWrap: "wrap",
+          }}
+        >
+          <Link href="/calculator" className="btn-outline">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <polyline points="1 4 1 10 7 10" />
+              <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10" />
+            </svg>
             Recalculate
-          </LiquidButton>
-        </Link>
-        <Link href="/dashboard">
-          <LiquidButton className="w-full sm:w-auto">
-            View Dashboard
-          </LiquidButton>
-        </Link>
+          </Link>
+          <Link href="/" className="btn-primary">
+            Back Home
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <line x1="5" y1="12" x2="19" y2="12" />
+              <polyline points="12 5 19 12 12 19" />
+            </svg>
+          </Link>
+        </motion.div>
       </div>
-    </div>
+    </>
   );
 }
